@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  // tipo di sintassi jsx, esempio className viene letto con class dal browser
   return (
     <div className="App">
       <header className="App-header">

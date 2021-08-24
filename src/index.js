@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
+  // Strict mode checks are run in development mode only
   <React.StrictMode>
     <App />
   </React.StrictMode>,
