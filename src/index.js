@@ -56,6 +56,7 @@ class Board extends React.Component {
     super(props);
     this.state = {
       squares: Array(9).fill(null),
+      xIsNext: true,
     };
   }
   handleClick(i){
@@ -63,9 +64,13 @@ class Board extends React.Component {
     // console.log(this.state.squares);
     // why slice, chiamiamo .slice() per creare una copia dell’array squares invece di modificare l’array esistente.
     const squares = this.state.squares.slice();
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
     // console.log(squares);
-    squares[i] = 'X';
-    this.setState({squares: squares});
+    // squares[i] = 'X';
+    this.setState({
+      squares: squares,
+      xIsNext: !this.state.xIsNext,
+    });
   }
   //inizio una funzione che mi crea un quadratino
   renderSquare(i) {
@@ -78,7 +83,7 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: Foo';
+    const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
     return (
       <div>
