@@ -52,42 +52,53 @@ function Square(props) {
 
 // faccio il campo
 class Board extends React.Component {
-    constructor(props) {
-    super(props);
-    this.state = {
-      squares: Array(9).fill(null),
-      xIsNext: true,
-    };
-  }
-  handleClick(i){
-    // console.log(i);
-    // console.log(this.state.squares);
-    // why slice, chiamiamo .slice() per creare una copia dell’array squares invece di modificare l’array esistente.
-    const squares = this.state.squares.slice();
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
-    // console.log(squares);
-    // squares[i] = 'X';
-    this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext,
-    });
-  }
+  //   constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     squares: Array(9).fill(null),
+  //     xIsNext: true,
+  //   };
+  // }
+  // handleClick(i){
+  //   // console.log(i);
+  //   // console.log(this.state.squares);
+  //   // why slice, chiamiamo .slice() per creare una copia dell’array squares invece di modificare l’array esistente.
+  //   const squares = this.state.squares.slice();
+  //   if (calculateWinner(squares) || squares[i]) {
+  //     return;
+  //   }    
+  //   squares[i] = this.state.xIsNext ? 'X' : 'O';
+  //   // console.log(squares);
+  //   // squares[i] = 'X';
+  //   this.setState({
+  //     squares: squares,
+  //     xIsNext: !this.state.xIsNext,
+  //   });
+  // }
   //inizio una funzione che mi crea un quadratino
   renderSquare(i) {
     return(
      <Square 
-        value={this.state.squares[i]} 
-        functionProp={() => this.handleClick(i)} 
+        value={this.props.squares[i]} 
+        functionProp={() => this.props.gameBoard(i)} 
       />
       );
   }
 
   render() {
-    const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    
+    // // const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    // const winner = calculateWinner(this.state.squares);
+    // let status;
+    // if (winner) {
+    //   status = 'Winner: ' + winner;
+    // } else {
+    //   status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    // }
 
     return (
       <div>
-        <div className="status">{status}</div>
+        {/* <div className="status">{status}</div> */}
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -109,19 +120,82 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      history: [{
+        squares: Array(9).fill(null),
+      }],
+      xIsNext: true,
+    };
+  }  
+  handleClick(i){
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }    
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({
+      history: history.concat([{
+        squares: squares,
+      }]),
+      xIsNext: !this.state.xIsNext,
+    });
+  }  
+
+
   render() {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const winner = calculateWinner(current.squares);
+    let status;
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+    
+    
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board
+            squares={current.squares}
+            gameBoard={(i) => this.handleClick(i)}          
+          />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
+          <div>{ status }</div>
           <ol>{/* TODO */}</ol>
         </div>
       </div>
     );
   }
+}
+
+// funzione helper per decidere il vincitore
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    // destrutturazione
+    const [a, b, c] = lines[i];
+    // verifico che sian tutti dello stesso simbolo
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
 }
 
 // ========================================
